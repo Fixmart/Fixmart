@@ -3,7 +3,7 @@ import { auth } from "@clerk/nextjs";
 
 import { connectToDB } from "@/lib/mongoDB";
 import Collection from "@/lib/models/Collection";
-
+import Product from "@/lib/models/Product";
 
 export const GET = async (
   req: NextRequest,
