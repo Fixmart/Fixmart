@@ -39,7 +39,7 @@ const formSchema = z.object({
 });
 
 interface ProductFormProps {
-  initialData?: ProductType; //Must have "?" to make it optional
+  initialData?: ProductType | null; //Must have "?" to make it optional
 }
 
 const ProductForm: React.FC<ProductFormProps> = ({ initialData }) => {
@@ -54,7 +54,6 @@ const ProductForm: React.FC<ProductFormProps> = ({ initialData }) => {
         method: "GET",
       });
       const data = await res.json();
-      console.log(data);
       setCollections(data);
       setLoading(false);
     } catch (err) {
@@ -66,7 +65,6 @@ const ProductForm: React.FC<ProductFormProps> = ({ initialData }) => {
   useEffect(() => {
     getCollections();
   }, []);
-
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: initialData
@@ -270,34 +268,35 @@ const ProductForm: React.FC<ProductFormProps> = ({ initialData }) => {
                 </FormItem>
               )}
             />
-            {Array.isArray(collections) && collections.length > 0 && (
-  <FormField
-    control={form.control}
-    name="collections"
-    render={({ field }) => (
-      <FormItem>
-        <FormLabel>Collections</FormLabel>
-        <FormControl>
-          <MultiSelect
-            placeholder="Collections"
-            collections={collections}
-            value={field.value}
-            onChange={(_id) => field.onChange([...field.value, _id])}
-            onRemove={(idToRemove) =>
-              field.onChange([
-                ...field.value.filter(
-                  (collectionId) => collectionId !== idToRemove
-                ),
-              ])
-            }
-          />
-        </FormControl>
-        <FormMessage className="text-red-1" />
-      </FormItem>
-    )}
-  />
-)}
-
+            {collections.length > 0 && (
+              <FormField
+                control={form.control}
+                name="collections"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Collections</FormLabel>
+                    <FormControl>
+                      <MultiSelect
+                        placeholder="Collections"
+                        collections={collections}
+                        value={field.value}
+                        onChange={(_id) =>
+                          field.onChange([...field.value, _id])
+                        }
+                        onRemove={(idToRemove) =>
+                          field.onChange([
+                            ...field.value.filter(
+                              (collectionId) => collectionId !== idToRemove
+                            ),
+                          ])
+                        }
+                      />
+                    </FormControl>
+                    <FormMessage className="text-red-1" />
+                  </FormItem>
+                )}
+              />
+            )}
             <FormField
               control={form.control}
               name="colors"
