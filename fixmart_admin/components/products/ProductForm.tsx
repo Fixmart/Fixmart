@@ -32,10 +32,13 @@ const formSchema = z.object({
   category: z.string(),
   collections: z.array(z.string()),
   tags: z.array(z.string()),
-  sizes: z.array(z.string()),
-  colors: z.array(z.string()),
+  size: z.string(),
+  color: z.string(),
   price: z.coerce.number().min(0.1),
   expense: z.coerce.number().min(0.1),
+  HSNCode: z.string(),
+  ItemCode:z.string(),
+  Quantity: z.coerce.number().min(0),
 });
 
 interface ProductFormProps {
@@ -81,10 +84,13 @@ const ProductForm: React.FC<ProductFormProps> = ({ initialData }) => {
           category: "",
           collections: [],
           tags: [],
-          sizes: [],
-          colors: [],
+          size: "",
+          color: "",
           price: 0.1,
           expense: 0.1,
+          HSNCode:"",
+          ItemCode:"",
+          Quantity:0,
         },
   });
 
@@ -193,12 +199,44 @@ const ProductForm: React.FC<ProductFormProps> = ({ initialData }) => {
           />
 
           <div className="md:grid md:grid-cols-3 gap-8">
+          <FormField
+              control={form.control}
+              name="ItemCode"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Item Code </FormLabel>
+                  <FormControl>
+                    <Input
+                      placeholder="Item Code"
+                      {...field}
+                      onKeyDown={handleKeyPress}
+                    />
+                  </FormControl>
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="HSNCode"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>HSN Code</FormLabel>
+                  <FormControl>
+                    <Input
+                      placeholder="HSN Code"
+                      {...field}
+                      onKeyDown={handleKeyPress}
+                    />
+                  </FormControl>
+                </FormItem>
+              )}
+            />
             <FormField
               control={form.control}
               name="price"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Price ($)</FormLabel>
+                  <FormLabel>Price (₹)</FormLabel>
                   <FormControl>
                     <Input
                       type="number"
@@ -216,7 +254,7 @@ const ProductForm: React.FC<ProductFormProps> = ({ initialData }) => {
               name="expense"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Expense ($)</FormLabel>
+                  <FormLabel>Expense (₹)</FormLabel>
                   <FormControl>
                     <Input
                       type="number"
@@ -299,24 +337,15 @@ const ProductForm: React.FC<ProductFormProps> = ({ initialData }) => {
             )}
             <FormField
               control={form.control}
-              name="colors"
+              name="color"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Colors</FormLabel>
+                  <FormLabel>Color</FormLabel>
                   <FormControl>
-                    <MultiText
-                      placeholder="Colors"
-                      value={field.value}
-                      onChange={(color) =>
-                        field.onChange([...field.value, color])
-                      }
-                      onRemove={(colorToRemove) =>
-                        field.onChange([
-                          ...field.value.filter(
-                            (color) => color !== colorToRemove
-                          ),
-                        ])
-                      }
+                    <Input
+                      placeholder="Color"
+                      {...field}
+                      onKeyDown={handleKeyPress}
                     />
                   </FormControl>
                   <FormMessage className="text-red-1" />
@@ -325,30 +354,37 @@ const ProductForm: React.FC<ProductFormProps> = ({ initialData }) => {
             />
             <FormField
               control={form.control}
-              name="sizes"
+              name="size"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Sizes</FormLabel>
+                  <FormLabel>Size</FormLabel>
                   <FormControl>
-                    <MultiText
-                      placeholder="Sizes"
-                      value={field.value}
-                      onChange={(size) =>
-                        field.onChange([...field.value, size])
-                      }
-                      onRemove={(sizeToRemove) =>
-                        field.onChange([
-                          ...field.value.filter(
-                            (size) => size !== sizeToRemove
-                          ),
-                        ])
-                      }
+                    <Input
+                      placeholder="Size"
+                      {...field}
+                      onKeyDown={handleKeyPress}
                     />
                   </FormControl>
-                  <FormMessage className="text-red-1" />
                 </FormItem>
               )}
             />
+            <FormField
+              control={form.control}
+              name="Quantity"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Quantity Available</FormLabel>
+                  <FormControl>
+                    <Input
+                      placeholder="Quantity"
+                      {...field}
+                      onKeyDown={handleKeyPress}
+                    />
+                  </FormControl>
+                </FormItem>
+              )}
+            />
+            
           </div>
 
           <div className="flex gap-10">
