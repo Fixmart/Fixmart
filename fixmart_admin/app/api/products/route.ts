@@ -17,13 +17,16 @@ export const POST = async (req: NextRequest) => {
 
     const {
       title,
+      ItemCode,
+      HSNCode,
       description,
       media,
       category,
       collections,
       tags,
-      sizes,
-      colors,
+      size,
+      color,
+      Quantity,
       price,
       expense,
     } = await req.json();
@@ -36,13 +39,16 @@ export const POST = async (req: NextRequest) => {
 
     const newProduct = await Product.create({
       title,
+      ItemCode,
+      HSNCode,
       description,
       media,
       category,
       collections,
       tags,
-      sizes,
-      colors,
+      size,
+      color,
+      Quantity,
       price,
       expense,
     });

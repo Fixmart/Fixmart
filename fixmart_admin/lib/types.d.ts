@@ -9,17 +9,22 @@ type CollectionType = {
 type ProductType = {
   _id: string;
   title: string;
+  ItemCode:String;
+  HSNCode:String;
   description: string;
   media: [string];
   category: string;
   collections: [CollectionType];
   tags: [string];
-  sizes: [string];
-  colors: [string];
+  size: [string];
+  color: [string];
+  Quantity:Number;
   price: number;
   expense: number;
   createdAt: Date;
   updatedAt: Date;
+  QuantitySold:Number;
+  PurchasedBy:[{CustomerType,quantity}];
 }
 
 type OrderColumnType = {
