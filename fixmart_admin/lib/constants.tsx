@@ -4,6 +4,7 @@ import {
   ShoppingBag,
   Tag,
   UsersRound,
+  Percent,
 } from "lucide-react";
 
 export const navLinks = [
@@ -32,4 +33,9 @@ export const navLinks = [
     icon: <UsersRound />,
     label: "Customers",
   },
+  {
+    url: "/coupons",
+    icon: <Percent />,
+    label: "Discount Coupons",
+  }
 ];

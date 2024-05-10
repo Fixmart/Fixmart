@@ -42,3 +42,11 @@ type CustomerType = {
   name: string;
   email: string;
 }
+
+type CouponsType={
+  couponCode: string;
+  percent: int;
+  startDate: DateTime;
+  endDate: DateTime;
+  products:[ProductType];
+}
