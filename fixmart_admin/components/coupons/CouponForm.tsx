@@ -3,49 +3,82 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import { Input } from "@/components/ui/input";
 import { useRouter } from "next/navigation";
+
+import { Separator } from "../ui/separator";
+import { Button } from "@/components/ui/button";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "../ui/textarea";
+import ImageUpload from "../custom ui/ImageUpload";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
-import { Button } from "@/components/ui/button";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import Delete from "../custom ui/Delete";
+import Multi from "../custom ui/Multi";
 import Loader from "../custom ui/Loader";
-import MultiSelect from "../custom ui/MultiSelect";
-import ProductDetails from "@/app/(dashboard)/products/[productId]/page";
-import Product from "@/lib/models/Product";
 
-const products = await Product.find().lean();
 const formSchema = z.object({
-  couponCode: z.string().min(2).max(20),
-  percent: z.number().min(0).max(100),
-  startDate: z.date(),
-  endDate: z.date(),
-  products: z.array(z.string()), // Assuming products are represented by their IDs
+    couponCode: z.string().min(2).max(20),
+    percent: z.number().min(0).max(100),
+    startDate: z.date(),
+    endDate: z.date(),
+    products: z.array(z.string()), 
 });
 
 interface CouponsFormProps {
-  initialData?: CouponsType | null; // Must have "?" to make it optional
+  initialData?: CouponsType | null; 
 }
 
-const CouponsForm: React.FC<CouponsFormProps> = ({ initialData }) => {
+const CouponForm: React.FC<CouponsFormProps> = ({ initialData }) => {
   const router = useRouter();
-  const [loading, setLoading] = useState(true);
 
+  const [loading, setLoading] = useState(true);
+  const [products, setProducts] = useState<ProductType[]>([]);
+
+  const getProducts = async () => {
+    try {
+      setLoading(true);
+      const res = await fetch("/api/products", {
+        method: "GET",
+      });
+      const data = await res.json();
+      setProducts(data);
+      setLoading(false);
+    } catch (err) {
+      console.log("[products_GET]", err);
+      toast.error("Something went wrong! Please try again.");
+    }
+  };
+
+  useEffect(() => {
+    getProducts();
+  }, []);
+  
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: initialData
-      ?{}
+      ? initialData
       : {
-          couponCode: "",
-          percent: 0,
-          startDate: new Date(),
-          endDate: new Date(),
-          products: [],
+        couponCode: "",
+        percent: 0,
+        startDate: new Date(),
+        endDate: new Date(),
+        products: [],
         },
   });
 
-  const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
+  const handleKeyPress = (
+    e:
+      | React.KeyboardEvent<HTMLInputElement>
+      | React.KeyboardEvent<HTMLTextAreaElement>
+  ) => {
     if (e.key === "Enter") {
       e.preventDefault();
     }
@@ -54,18 +87,22 @@ const CouponsForm: React.FC<CouponsFormProps> = ({ initialData }) => {
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
       setLoading(true);
-      const res = await fetch("/api/coupons", {
+      const url = initialData
+        ? `/api/coupons/${initialData._id}`
+        : "/api/coupons";
+      const res = await fetch(url, {
         method: "POST",
         body: JSON.stringify(values),
       });
       if (res.ok) {
         setLoading(false);
-        toast.success("Coupon created successfully");
+        toast.success(`Coupons ${initialData ? "updated" : "created"}`);
+        window.location.href = "/coupons";
         router.push("/coupons");
       }
     } catch (err) {
-      console.error("[CouponsForm]", err);
-      toast.error("Failed to create coupon. Please try again.");
+      console.log("[coupons_POST]", err);
+      toast.error("Something went wrong! Please try again.");
     }
   };
 
@@ -75,12 +112,13 @@ const CouponsForm: React.FC<CouponsFormProps> = ({ initialData }) => {
     <div className="p-10">
       {initialData ? (
         <div className="flex items-center justify-between">
-          <p className="text-heading2-bold">Edit Coupon</p>
-          <Delete id={initialData.couponCode} item="coupon" />
+          <p className="text-heading2-bold">Edit Coupons</p>
+          <Delete id={initialData._id} item={""} />
         </div>
       ) : (
         <p className="text-heading2-bold">Create Coupon</p>
       )}
+      <Separator className="bg-grey-1 mt-4 mb-7" />
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
           <FormField
@@ -155,8 +193,36 @@ const CouponsForm: React.FC<CouponsFormProps> = ({ initialData }) => {
                     <FormMessage />
                     </FormItem>
   )}
-/>
-                
+/>        
+{products.length > 0 && (
+             <FormField
+                control={form.control}
+                name="products"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Products</FormLabel>
+                    <FormControl>
+                      <Multi
+                        placeholder="Products"
+                        products={products}
+                        value={field.value}
+                        onChange={(_id) =>
+                          field.onChange([...field.value, _id])
+                        }
+                        onRemove={(idToRemove) =>
+                          field.onChange([
+                            ...field.value.filter(
+                              (productsId) => productsId !== idToRemove
+                            ),
+                          ])
+                        }
+                      />
+                    </FormControl>
+                    <FormMessage className="text-red-1" />
+                  </FormItem>
+                )}
+              />
+)}  
 
           <div className="flex gap-10">
             <Button type="submit" className="bg-blue-1 text-white">
@@ -176,4 +242,5 @@ const CouponsForm: React.FC<CouponsFormProps> = ({ initialData }) => {
   );
 };
 
-export default CouponsForm;
+export default CouponForm;
+

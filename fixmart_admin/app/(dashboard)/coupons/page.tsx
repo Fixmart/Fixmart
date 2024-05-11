@@ -14,7 +14,7 @@ const Coupons = () => {
   const router = useRouter();
 
   const [loading, setLoading] = useState(true);
-  const [coupons, setCoupons] = useState<CouponsType[]>([]); // Adjust the type for coupons if needed
+  const [coupons, setCoupons] = useState<CouponsType[]>([]); 
 
   const getCoupons = async () => {
     try {

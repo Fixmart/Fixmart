@@ -5,8 +5,8 @@ import { NextRequest, NextResponse } from "next/server";
 export const GET = async (req: NextRequest, { params }: { params: { couponCode: string } }) => {
   try {
     await connectToDB();
+    const coupon = await Coupons.findById(params.couponCode)
 
-    const coupon = await Coupons.findOne({ couponCode: params.couponCode });
 
     if (!coupon) {
       return new NextResponse(JSON.stringify({ message: "Coupon not found" }), { status: 404 });

@@ -1,3 +1,4 @@
+
 import Coupons from "@/lib/models/Coupons";
 import Product from "@/lib/models/Product";
 import { connectToDB } from "@/lib/mongoDB";
@@ -11,16 +12,19 @@ export const GET = async (
   try {
     await connectToDB();
 
-    const coupon = await Coupons.findOne({ couponCode: params.couponCode });
+    const coupons = await Coupons.findById(params.couponCode).populate({
+      path: "products",
+      model: Product,
+    });
 
-    if (!coupon) {
+    if (!coupons) {
       return new NextResponse(
         JSON.stringify({ message: "Coupon not found" }),
         { status: 404 }
       );
     }
 
-    return new NextResponse(JSON.stringify(coupon), {
+    return new NextResponse(JSON.stringify(coupons), {
       status: 200,
       headers: {
         "Access-Control-Allow-Origin": `${process.env.ECOMMERCE_STORE_URL}`,
@@ -47,54 +51,67 @@ export const POST = async (
 
     await connectToDB();
 
-    const couponData = await req.json();
+    const coupons = await Coupons.findById(params.couponCode);
 
-    const existingCoupon = await Coupons.findOne({
-      couponCode: params.couponCode,
-    });
-
-    if (existingCoupon) {
+    if (!coupons) {
       return new NextResponse(
-        JSON.stringify({ message: "Coupon code already exists" }),
-        { status: 400 }
-      );
-    }
-
-    const newCoupon = new Coupons({ ...couponData, couponCode: params.couponCode });
-    await newCoupon.save();
-
-    return new NextResponse(JSON.stringify(newCoupon), { status: 200 });
-  } catch (err) {
-    console.log("[couponCode_POST]", err);
-    return new NextResponse("Internal error", { status: 500 });
-  }
-};
-
-export const PUT = async (
-  req: NextRequest,
-  { params }: { params: { couponCode: string } }
-) => {
-  try {
-    await connectToDB();
-
-    const couponData = await req.json();
-
-    const updatedCoupon = await Coupons.findOneAndUpdate(
-      { couponCode: params.couponCode },
-      couponData,
-      { new: true }
-    );
-
-    if (!updatedCoupon) {
-      return new NextResponse(
-        JSON.stringify({ message: "Coupon not found" }),
+        JSON.stringify({ message: "Coupons not found" }),
         { status: 404 }
       );
     }
+    const {
+      couponCode,
+      percent,
+      startDate,
+      endDate,
+      products,
+    } = await req.json();
 
-    return new NextResponse(JSON.stringify(updatedCoupon), { status: 200 });
+    if (!couponCode|| !percent || !startDate || !endDate || !products) {
+      return new NextResponse("Not enough data to create a Coupons", {
+        status: 400,
+      });
+    }
+
+    const addedProducts = products.filter(
+      (productId: string) => !coupons.products.includes(productId)
+    );
+    // included in new data, but not included in the previous data
+
+    const removedProducts = coupons.products.filter(
+      (productId: string) => !products.includes(productId)
+    );
+    await Promise.all([
+      // Update added collections with this product
+      ...addedProducts.map((productId: string) =>
+        Product.findByIdAndUpdate(productId, {
+          $push: { coupons: coupons._id },
+        })
+      ),
+      ...removedProducts.map((productId: string) =>
+        Product.findByIdAndUpdate(productId, {
+          $pull: { coupons: coupons._id },
+        })
+      ),
+    ]);
+
+    const updatedCoupon = await Coupons.findByIdAndUpdate(
+      coupons._id,
+      {
+        couponCode,
+        percent,
+        startDate,
+        endDate,
+        products,
+      },
+      { new: true }
+    ).populate({ path: "products", model: Product });
+
+    await updatedCoupon.save();
+
+    return NextResponse.json(updatedCoupon, { status: 200 });
   } catch (err) {
-    console.log("[couponCode_PUT]", err);
+    console.log("[couponCode_POST]", err);
     return new NextResponse("Internal error", { status: 500 });
   }
 };
@@ -104,27 +121,42 @@ export const DELETE = async (
   { params }: { params: { couponCode: string } }
 ) => {
   try {
+    const { userId } = auth();
+
+    if (!userId) {
+      return new NextResponse("Unauthorized", { status: 401 });
+    }
+
     await connectToDB();
 
-    const deletedCoupon = await Coupons.findOneAndDelete({
-      couponCode: params.couponCode,
-    });
+    const coupons = await Coupons.findById(params.couponCode);
 
-    if (!deletedCoupon) {
+    if (!coupons) {
       return new NextResponse(
         JSON.stringify({ message: "Coupon not found" }),
         { status: 404 }
       );
     }
 
-    return new NextResponse(
-      JSON.stringify({ message: "Coupon deleted" }),
-      { status: 200 }
+    await Coupons.findByIdAndDelete(coupons._id);
+
+    // Update collections
+    await Promise.all(
+      coupons.products.map((productId: string) =>
+        Product.findByIdAndUpdate(productId, {
+          $pull: { coupons: coupons._id },
+        })
+      )
     );
+
+    return new NextResponse(JSON.stringify({ message: "Coupon deleted" }), {
+      status: 200,
+    });
   } catch (err) {
     console.log("[couponCode_DELETE]", err);
     return new NextResponse("Internal error", { status: 500 });
   }
 };
+
 
 export const dynamic = "force-dynamic";

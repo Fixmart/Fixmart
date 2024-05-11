@@ -44,6 +44,7 @@ type CustomerType = {
 }
 
 type CouponsType={
+  _id: any;
   couponCode: string;
   percent: int;
   startDate: DateTime;

@@ -1,6 +1,7 @@
-// Import necessary modules
+"use client"
+
 import Loader from '@/components/custom ui/Loader'
-import CouponsForm from '@/components/coupons/CouponsForm'
+import CouponsForm from '@/components/coupons/CouponForm'
 import React, { useEffect, useState } from 'react'
 
 const CouponDetails = ({ params }: { params: { couponCode: string }}) => {
@@ -8,7 +9,7 @@ const CouponDetails = ({ params }: { params: { couponCode: string }}) => {
   const [loading, setLoading] = useState(true)
   const [couponDetails, setCouponDetails] = useState<CouponsType | null>(null)
 
-  // Function to fetch coupon details from the API
+
   const getCouponDetails = async () => {
     try { 
       const res = await fetch(`/api/coupons/${params.couponCode}`, {
@@ -22,12 +23,10 @@ const CouponDetails = ({ params }: { params: { couponCode: string }}) => {
     }
   }
 
-  // useEffect hook to fetch coupon details when the component mounts
   useEffect(() => {
     getCouponDetails()
   }, [])
 
-  // Render loading indicator if data is still loading, otherwise render the CouponsForm with initial data
   return loading ? <Loader /> : (
     <CouponsForm initialData={couponDetails} />
   )

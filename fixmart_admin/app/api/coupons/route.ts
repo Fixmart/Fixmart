@@ -1,122 +1,71 @@
-import Coupons from "@/lib/models/Coupons";
-import Product from "@/lib/models/Product";
-import { connectToDB } from "@/lib/mongoDB";
+import { auth } from "@clerk/nextjs";
 import { NextRequest, NextResponse } from "next/server";
 
-export const GET = async (
-  req: NextRequest,
-  { params }: { params: { couponCode: string } }
-) => {
+import { connectToDB } from "@/lib/mongoDB";
+import Product from "@/lib/models/Product";
+import Coupons from "@/lib/models/Coupons";
+
+
+export const POST = async (req: NextRequest) => {
   try {
-    await connectToDB();
+    const { userId } = auth();
 
-    const coupon = await Coupons.findOne({ couponCode: params.couponCode });
-
-    if (!coupon) {
-      return new NextResponse(
-        JSON.stringify({ message: "Coupon not found" }),
-        { status: 404 }
-      );
+    if (!userId) {
+      return new NextResponse("Unauthorized", { status: 401 });
     }
 
-    return new NextResponse(JSON.stringify(coupon), {
-      status: 200,
-      headers: {
-        "Access-Control-Allow-Origin": `${process.env.ECOMMERCE_STORE_URL}`,
-        "Access-Control-Allow-Methods": "GET",
-        "Access-Control-Allow-Headers": "Content-Type",
-      },
-    });
-  } catch (err) {
-    console.log("[couponCode_GET]", err);
-    return new NextResponse("Internal error", { status: 500 });
-  }
-};
-
-export const POST = async (
-  req: NextRequest,
-  { params }: { params: { couponCode: string } }
-) => {
-  try {
     await connectToDB();
 
-    const couponData = await req.json();
-
-    const existingCoupon = await Coupons.findOne({
-      couponCode: params.couponCode,
-    });
-
-    if (existingCoupon) {
-      return new NextResponse(
-        JSON.stringify({ message: "Coupon code already exists" }),
-        { status: 400 }
-      );
+    const {
+      couponCode,
+      percent,
+      startDate,
+      endDate,
+      products,
+    } = await req.json();
+    if (!couponCode|| !percent || !startDate || !endDate || !products) {
+      return new NextResponse("Not enough data to create a Coupons", {
+        status: 400,
+      });
     }
 
-    const newCoupon = new Coupons({ ...couponData, couponCode: params.couponCode });
+    const newCoupon = await Product.create({
+      couponCode,
+      percent,
+      startDate,
+      endDate,
+      products,
+    });
+
     await newCoupon.save();
 
-    return new NextResponse(JSON.stringify(newCoupon), { status: 200 });
+    if (products) {
+      for (const productId of products) {
+        const product  = await Product.findById(productId);
+        if (products) {
+          products.coupons.push(newCoupon._id);
+          await products.save();
+        }
+      }
+    }
+
+    return NextResponse.json(newCoupon, { status: 200 });
   } catch (err) {
-    console.log("[couponCode_POST]", err);
-    return new NextResponse("Internal error", { status: 500 });
+    console.log("[products_POST]", err);
+    return new NextResponse("Internal Error", { status: 500 });
   }
 };
 
-export const PUT = async (
-  req: NextRequest,
-  { params }: { params: { couponCode: string } }
-) => {
+export const GET = async (req: NextRequest, { params }: { params: { couponCode: string } }) => {
   try {
     await connectToDB();
 
-    const couponData = await req.json();
+    const coupons = (await Coupons.find().sort({ createdAt: "desc" }).populate({ path: "products", model: Product }))
 
-    const updatedCoupon = await Coupons.findOneAndUpdate(
-      { couponCode: params.couponCode },
-      couponData,
-      { new: true }
-    );
-
-    if (!updatedCoupon) {
-      return new NextResponse(
-        JSON.stringify({ message: "Coupon not found" }),
-        { status: 404 }
-      );
-    }
-
-    return new NextResponse(JSON.stringify(updatedCoupon), { status: 200 });
+    return NextResponse.json(coupons, { status: 200 });
   } catch (err) {
-    console.log("[couponCode_PUT]", err);
-    return new NextResponse("Internal error", { status: 500 });
-  }
-};
-
-export const DELETE = async (
-  req: NextRequest,
-  { params }: { params: { couponCode: string } }
-) => {
-  try {
-    await connectToDB();
-
-    const deletedCoupon = await Coupons.findOneAndDelete({
-      couponCode: params.couponCode,
-    });
-
-    if (!deletedCoupon) {
-      return new NextResponse(
-        JSON.stringify({ message: "Coupon not found" }),
-        { status: 404 }
-      );
-    }
-
-    return new NextResponse(
-      JSON.stringify({ message: "Coupon deleted" }),
-      { status: 200 }
-    );
-  } catch (err) {
-    console.log("[couponCode_DELETE]", err);
-    return new NextResponse("Internal error", { status: 500 });
+    console.log("[coupons_GET]", err);
+    return new NextResponse("Internal Error", { status: 500 });
   }
 };
 
