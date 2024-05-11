@@ -64,7 +64,12 @@ const CouponForm: React.FC<CouponsFormProps> = ({ initialData }) => {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: initialData
-      ? initialData
+    ? {
+      ...initialData,
+      products: initialData.products.map(
+        (products) => products._id
+      ),
+    }
       : {
         couponCode: "",
         percent: 0,
