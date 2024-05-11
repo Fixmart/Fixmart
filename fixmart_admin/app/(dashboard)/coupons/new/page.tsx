@@ -1,4 +1,4 @@
-import CouponsForm from "@/components/coupons/couponsForm"
+import CouponsForm from "@/components/coupons/CouponsForm" 
 
 const CreateCoupons = () => {
   return (

@@ -1,35 +1,48 @@
+"use client";
+
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
+import { Input } from "@/components/ui/input";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { Button } from "@/components/ui/button";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
 import Delete from "../custom ui/Delete";
+import Loader from "../custom ui/Loader";
+import MultiSelect from "../custom ui/MultiSelect";
+import ProductDetails from "@/app/(dashboard)/products/[productId]/page";
+import Product from "@/lib/models/Product";
 
+const products = await Product.find().lean();
 const formSchema = z.object({
   couponCode: z.string().min(2).max(20),
   percent: z.number().min(0).max(100),
   startDate: z.date(),
   endDate: z.date(),
-  products:z.array(z.string()),
+  products: z.array(z.string()), // Assuming products are represented by their IDs
 });
 
-const CouponsForm: React.FC = () => {
+interface CouponsFormProps {
+  initialData?: CouponsType | null; // Must have "?" to make it optional
+}
+
+const CouponsForm: React.FC<CouponsFormProps> = ({ initialData }) => {
   const router = useRouter();
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
-    defaultValues: {
-      couponCode: "",
-      percent: 0,
-      startDate: new Date(),
-      endDate: new Date(),
-      products: [],
-    },
+    defaultValues: initialData
+      ?{}
+      : {
+          couponCode: "",
+          percent: 0,
+          startDate: new Date(),
+          endDate: new Date(),
+          products: [],
+        },
   });
 
   const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -51,14 +64,23 @@ const CouponsForm: React.FC = () => {
         router.push("/coupons");
       }
     } catch (err) {
-      console.error("[couponsForm]", err);
+      console.error("[CouponsForm]", err);
       toast.error("Failed to create coupon. Please try again.");
     }
   };
 
-  return (
+  return loading ? (
+    <Loader />
+  ) : (
     <div className="p-10">
-      <p className="text-heading2-bold">Create Coupon</p>
+      {initialData ? (
+        <div className="flex items-center justify-between">
+          <p className="text-heading2-bold">Edit Coupon</p>
+          <Delete id={initialData.couponCode} item="coupon" />
+        </div>
+      ) : (
+        <p className="text-heading2-bold">Create Coupon</p>
+      )}
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
           <FormField
@@ -68,7 +90,11 @@ const CouponsForm: React.FC = () => {
               <FormItem>
                 <FormLabel>Coupon Code</FormLabel>
                 <FormControl>
-                  <Input placeholder="Coupon Code" {...field} onKeyDown={handleKeyPress} />
+                  <Input
+                    placeholder="Coupon Code"
+                    {...field}
+                    onKeyDown={handleKeyPress}
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -81,7 +107,12 @@ const CouponsForm: React.FC = () => {
               <FormItem>
                 <FormLabel>Percent Discount</FormLabel>
                 <FormControl>
-                  <Input type="number" placeholder="Percent Discount" {...field} onKeyDown={handleKeyPress} />
+                  <Input
+                    type="number"
+                    placeholder="Percent Discount"
+                    {...field}
+                    onKeyDown={handleKeyPress}
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -94,32 +125,39 @@ const CouponsForm: React.FC = () => {
               <FormItem>
                 <FormLabel>Start Date</FormLabel>
                 <FormControl>
-                <Input
+                  <Input
                     type="date"
                     placeholder="Start Date"
-                    value={field.value.toISOString().substr(0, 10)} // Convert Date to string in YYYY-MM-DD format
                     {...field}
+                    value={field.value.toISOString().split('T')[0]}
                     onKeyDown={handleKeyPress}
-                    />
-
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
             )}
           />
           <FormField
-            control={form.control}
-            name="endDate"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>End Date</FormLabel>
-                <FormControl>
-                  <Input type="date" placeholder="End Date" {...field} onKeyDown={handleKeyPress} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
+                control={form.control}
+                name="endDate"
+                render={({ field }) => (
+                    <FormItem>
+                    <FormLabel>End Date</FormLabel>
+                    <FormControl>
+                        <Input
+                        type="date"
+                        placeholder="End Date"
+                        {...field}
+                        value={field.value.toISOString().split('T')[0]}
+                        onKeyDown={handleKeyPress}
+                        />
+                    </FormControl>
+                    <FormMessage />
+                    </FormItem>
+  )}
+/>
+                
+
           <div className="flex gap-10">
             <Button type="submit" className="bg-blue-1 text-white">
               Submit
