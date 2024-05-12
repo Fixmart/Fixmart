@@ -2,8 +2,18 @@
 
 import { useState } from "react";
 import { Badge } from "../ui/badge";
-import { Command, X } from "lucide-react";
-import { CommandGroup, CommandInput, CommandItem } from "../ui/command";
+import { X } from "lucide-react";
+import {
+  Command,
+  CommandDialog,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+  CommandSeparator,
+  CommandShortcut,
+} from "@/components/ui/command";
 
 interface MultiProps {
   placeholder: string;
@@ -22,7 +32,9 @@ const Multi: React.FC<MultiProps> = ({
 }) => {
   const [inputValue, setInputValue] = useState("");
   const [open, setOpen] = useState(false);
+
   let selected: ProductType[];
+
   if (value.length === 0) {
     selected = [];
   } else {
@@ -31,7 +43,7 @@ const Multi: React.FC<MultiProps> = ({
     ) as ProductType[];
   }
 
-
+   const selectables =products.filter((products)=> !selected.includes(products));
   return (
     <Command className="overflow-visible bg-white">
       <div className="flex gap-1 flex-wrap border rounded-md">
@@ -56,7 +68,7 @@ const Multi: React.FC<MultiProps> = ({
       <div className="relative mt-2">
         {open && (
           <CommandGroup className="absolute w-full z-30 top-0 overflow-auto border rounded-md shadow-md">
-            {products.map((products) => (
+            {selectables.map((products) => (
               <CommandItem
                 key={products._id}
                 onMouseDown={(e) => e.preventDefault()}

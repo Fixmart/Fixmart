@@ -29,7 +29,7 @@ export const POST = async (req: NextRequest) => {
       });
     }
 
-    const newCoupon = await Product.create({
+    const newCoupon = await Coupons.create({
       couponCode,
       percent,
       startDate,

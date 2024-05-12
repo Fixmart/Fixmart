@@ -16,8 +16,8 @@ const couponSchema = new mongoose.Schema({
   updatedAt: {
     type: Date,
     default: Date.now,
-  }
-});
+  },
+}, { toJSON: { getters: true } });
 
 const Coupon = mongoose.models.Coupon || mongoose.model("Coupon", couponSchema);
 

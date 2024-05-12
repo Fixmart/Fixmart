@@ -160,7 +160,7 @@ const CouponForm: React.FC<CouponsFormProps> = ({ initialData }) => {
                 <FormMessage />
               </FormItem>
             )}
-          />
+          /> <div className="md:grid md:grid-cols-2 gap-8">
           <FormField
             control={form.control}
             name="startDate"
@@ -198,8 +198,8 @@ const CouponForm: React.FC<CouponsFormProps> = ({ initialData }) => {
                     <FormMessage />
                     </FormItem>
   )}
-/>        
-{products.length > 0 && (
+/>        </div>
+
              <FormField
                 control={form.control}
                 name="products"
@@ -227,7 +227,7 @@ const CouponForm: React.FC<CouponsFormProps> = ({ initialData }) => {
                   </FormItem>
                 )}
               />
-)}  
+
 
           <div className="flex gap-10">
             <Button type="submit" className="bg-blue-1 text-white">
