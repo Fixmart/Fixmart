@@ -61,6 +61,9 @@ export const POST = async (
 
     const {
       title,
+      hsn,
+      itemcode,
+      quantityavailable,
       description,
       media,
       category,
@@ -110,6 +113,9 @@ export const POST = async (
       product._id,
       {
         title,
+        hsn,
+        itemcode,
+        quantityavailable,
         description,
         media,
         category,
