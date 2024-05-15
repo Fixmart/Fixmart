@@ -22,6 +22,7 @@ export const POST = async (req: NextRequest) => {
       startDate,
       endDate,
       products,
+      description,
     } = await req.json();
     if (!couponCode|| !percent || !startDate || !endDate || !products) {
       return new NextResponse("Not enough data to create a Coupons", {
@@ -35,6 +36,7 @@ export const POST = async (req: NextRequest) => {
       startDate,
       endDate,
       products,
+      description,
     });
 
     await newCoupon.save();

@@ -26,10 +26,11 @@ import Loader from "../custom ui/Loader";
 
 const formSchema = z.object({
     couponCode: z.string().min(2).max(20),
-    percent: z.number().min(0).max(100),
+    percent: z.coerce.number().min(0).max(100),
     startDate: z.date(),
     endDate: z.date(),
-    products: z.array(z.string()), 
+    products: z.array(z.string()),
+    description: z.string(),
 });
 
 interface CouponsFormProps {
@@ -143,6 +144,49 @@ const CouponForm: React.FC<CouponsFormProps> = ({ initialData }) => {
               </FormItem>
             )}
           />
+          <div className="md:grid md:grid-cols-2 gap-8">
+          <FormField
+    control={form.control}
+    name="startDate"
+    render={({ field }) => (
+        <FormItem>
+            <FormLabel>Start Date</FormLabel>
+            <FormControl>
+                <Input
+                    type="date"
+                    placeholder="Start Date"
+                    {...field}
+                    value={field.value instanceof Date ? field.value.toISOString().split('T')[0] : field.value}
+                    onKeyDown={handleKeyPress}
+                />
+            </FormControl>
+            <FormMessage />
+        </FormItem>
+    )}
+/>
+
+
+
+          <FormField
+                control={form.control}
+                name="endDate"
+                render={({ field }) => (
+                    <FormItem>
+                    <FormLabel>End Date</FormLabel>
+                    <FormControl>
+                        <Input
+                        type="date"
+                        placeholder="End Date"
+                        {...field}
+                        value={field.value}
+                        onKeyDown={handleKeyPress}
+                        />
+                    </FormControl>
+                    <FormMessage />
+                    </FormItem>
+  )}
+/>        </div>
+          <div className="md:grid md:grid-cols-2 gap-8">
           <FormField
             control={form.control}
             name="percent"
@@ -160,47 +204,8 @@ const CouponForm: React.FC<CouponsFormProps> = ({ initialData }) => {
                 <FormMessage />
               </FormItem>
             )}
-          /> <div className="md:grid md:grid-cols-2 gap-8">
-          <FormField
-            control={form.control}
-            name="startDate"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Start Date</FormLabel>
-                <FormControl>
-                  <Input
-                    type="date"
-                    placeholder="Start Date"
-                    {...field}
-                    value={field.value.toISOString().split('T')[0]}
-                    onKeyDown={handleKeyPress}
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
           />
           <FormField
-                control={form.control}
-                name="endDate"
-                render={({ field }) => (
-                    <FormItem>
-                    <FormLabel>End Date</FormLabel>
-                    <FormControl>
-                        <Input
-                        type="date"
-                        placeholder="End Date"
-                        {...field}
-                        value={field.value.toISOString().split('T')[0]}
-                        onKeyDown={handleKeyPress}
-                        />
-                    </FormControl>
-                    <FormMessage />
-                    </FormItem>
-  )}
-/>        </div>
-
-             <FormField
                 control={form.control}
                 name="products"
                 render={({ field }) => (
@@ -226,7 +231,28 @@ const CouponForm: React.FC<CouponsFormProps> = ({ initialData }) => {
                     <FormMessage className="text-red-1" />
                   </FormItem>
                 )}
-              />
+              /> </div>
+
+        <FormField
+              control={form.control}
+              name="description"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Description</FormLabel>
+                  <FormControl>
+                    <Input
+                      placeholder="Description"
+                      {...field}
+                      onKeyDown={handleKeyPress}
+                    />
+                  </FormControl>
+                  <FormMessage className="text-red-1" />
+                </FormItem>
+              )}
+            />
+           
+
+             
 
 
           <div className="flex gap-10">

@@ -53,4 +53,5 @@ type CouponsType={
   startDate: DateTime;
   endDate: DateTime;
   products:[ProductType];
+  description: string;
 }
