@@ -27,6 +27,9 @@ import Loader from "../custom ui/Loader";
 
 const formSchema = z.object({
   title: z.string().min(2).max(20),
+  hsn: z.string(),
+  itemcode: z.string(),
+  quantityavailable: z.string(),
   description: z.string().min(2).max(500).trim(),
   media: z.array(z.string()),
   category: z.string(),
@@ -36,9 +39,6 @@ const formSchema = z.object({
   color: z.string(),
   price: z.coerce.number().min(0.1),
   expense: z.coerce.number().min(0.1),
-  HSNCode: z.string(),
-  ItemCode:z.string(),
-  Quantity: z.coerce.number().min(0),
 });
 
 interface ProductFormProps {
@@ -68,6 +68,7 @@ const ProductForm: React.FC<ProductFormProps> = ({ initialData }) => {
   useEffect(() => {
     getCollections();
   }, []);
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: initialData
@@ -79,6 +80,9 @@ const ProductForm: React.FC<ProductFormProps> = ({ initialData }) => {
         }
       : {
           title: "",
+          hsn:"",
+          itemcode:"",
+          quantityavailable:"",
           description: "",
           media: [],
           category: "",
@@ -88,9 +92,6 @@ const ProductForm: React.FC<ProductFormProps> = ({ initialData }) => {
           color: "",
           price: 0.1,
           expense: 0.1,
-          HSNCode:"",
-          ItemCode:"",
-          Quantity:0,
         },
   });
 
@@ -199,38 +200,6 @@ const ProductForm: React.FC<ProductFormProps> = ({ initialData }) => {
           />
 
           <div className="md:grid md:grid-cols-3 gap-8">
-          <FormField
-              control={form.control}
-              name="ItemCode"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Item Code </FormLabel>
-                  <FormControl>
-                    <Input
-                      placeholder="Item Code"
-                      {...field}
-                      onKeyDown={handleKeyPress}
-                    />
-                  </FormControl>
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="HSNCode"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>HSN Code</FormLabel>
-                  <FormControl>
-                    <Input
-                      placeholder="HSN Code"
-                      {...field}
-                      onKeyDown={handleKeyPress}
-                    />
-                  </FormControl>
-                </FormItem>
-              )}
-            />
             <FormField
               control={form.control}
               name="price"
@@ -306,7 +275,95 @@ const ProductForm: React.FC<ProductFormProps> = ({ initialData }) => {
                 </FormItem>
               )}
             />
-            {collections.length > 0 && (
+           
+           <FormField
+              control={form.control}
+              name="color"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Color</FormLabel>
+                  <FormControl>
+                    <Input
+                      placeholder="Color"
+                      {...field}
+                      onKeyDown={handleKeyPress}
+                    />
+                  </FormControl>
+                  <FormMessage className="text-red-1" />
+                </FormItem>
+              )}
+            />
+         <FormField
+              control={form.control}
+              name="size"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Size</FormLabel>
+                  <FormControl>
+                    <Input
+                      placeholder="Size"
+                      {...field}
+                      onKeyDown={handleKeyPress}
+                    />
+                  </FormControl>
+                  <FormMessage className="text-red-1" />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="hsn"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>HSN</FormLabel>
+                  <FormControl>
+                    <Input
+                      placeholder="HSN"
+                      {...field}
+                      onKeyDown={handleKeyPress}
+                    />
+                  </FormControl>
+                  <FormMessage className="text-red-1" />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="itemcode"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>ItemCode</FormLabel>
+                  <FormControl>
+                    <Input
+                      placeholder="ItemCode"
+                      {...field}
+                      onKeyDown={handleKeyPress}
+                    />
+                  </FormControl>
+                  <FormMessage className="text-red-1" />
+                </FormItem>
+              )}
+            />
+             <FormField
+              control={form.control}
+              name="quantityavailable"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Quantity</FormLabel>
+                  <FormControl>
+                    <Input
+                      placeholder="Quantity"
+                      {...field}
+                      onKeyDown={handleKeyPress}
+                    />
+                  </FormControl>
+                  <FormMessage className="text-red-1" />
+                </FormItem>
+              )}
+            />
+            <div></div>
+            <div></div>
+             {collections.length > 0 && (
               <FormField
                 control={form.control}
                 name="collections"
@@ -335,58 +392,7 @@ const ProductForm: React.FC<ProductFormProps> = ({ initialData }) => {
                 )}
               />
             )}
-            <FormField
-              control={form.control}
-              name="color"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Color</FormLabel>
-                  <FormControl>
-                    <Input
-                      placeholder="Color"
-                      {...field}
-                      onKeyDown={handleKeyPress}
-                    />
-                  </FormControl>
-                  <FormMessage className="text-red-1" />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="size"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Size</FormLabel>
-                  <FormControl>
-                    <Input
-                      placeholder="Size"
-                      {...field}
-                      onKeyDown={handleKeyPress}
-                    />
-                  </FormControl>
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="Quantity"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Quantity Available</FormLabel>
-                  <FormControl>
-                    <Input
-                      placeholder="Quantity"
-                      {...field}
-                      onKeyDown={handleKeyPress}
-                    />
-                  </FormControl>
-                </FormItem>
-              )}
-            />
-            
-          </div>
-
+        </div>
           <div className="flex gap-10">
             <Button type="submit" className="bg-blue-1 text-white">
               Submit

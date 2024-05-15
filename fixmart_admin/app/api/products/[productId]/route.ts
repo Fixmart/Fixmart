@@ -61,13 +61,16 @@ export const POST = async (
 
     const {
       title,
+      hsn,
+      itemcode,
+      quantityavailable,
       description,
       media,
       category,
       collections,
       tags,
-      sizes,
-      colors,
+      size,
+      color,
       price,
       expense,
     } = await req.json();
@@ -110,13 +113,16 @@ export const POST = async (
       product._id,
       {
         title,
+        hsn,
+        itemcode,
+        quantityavailable,
         description,
         media,
         category,
         collections,
         tags,
-        sizes,
-        colors,
+        size,
+        color,
         price,
         expense,
       },
@@ -124,7 +130,6 @@ export const POST = async (
     ).populate({ path: "collections", model: Collection });
 
     await updatedProduct.save();
-
     return NextResponse.json(updatedProduct, { status: 200 });
   } catch (err) {
     console.log("[productId_POST]", err);
@@ -175,4 +180,3 @@ export const DELETE = async (
 };
 
 export const dynamic = "force-dynamic";
-
