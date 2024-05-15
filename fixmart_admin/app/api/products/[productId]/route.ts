@@ -69,8 +69,8 @@ export const POST = async (
       category,
       collections,
       tags,
-      sizes,
-      colors,
+      size,
+      color,
       price,
       expense,
     } = await req.json();
@@ -121,8 +121,8 @@ export const POST = async (
         category,
         collections,
         tags,
-        sizes,
-        colors,
+        size,
+        color,
         price,
         expense,
       },
@@ -130,7 +130,6 @@ export const POST = async (
     ).populate({ path: "collections", model: Collection });
 
     await updatedProduct.save();
-
     return NextResponse.json(updatedProduct, { status: 200 });
   } catch (err) {
     console.log("[productId_POST]", err);
