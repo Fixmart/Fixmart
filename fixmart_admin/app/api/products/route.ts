@@ -27,7 +27,7 @@ export const POST = async (req: NextRequest) => {
       price,
       expense,
     } = await req.json();
-    console.log(tags);
+
     if (!title || !description || !media || !category || !price || !expense) {
       return new NextResponse("Not enough data to create a product", {
         status: 400,
@@ -82,4 +82,3 @@ export const GET = async (req: NextRequest) => {
 };
 
 export const dynamic = "force-dynamic";
-
