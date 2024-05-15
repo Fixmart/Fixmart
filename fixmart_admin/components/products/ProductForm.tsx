@@ -27,13 +27,16 @@ import Loader from "../custom ui/Loader";
 
 const formSchema = z.object({
   title: z.string().min(2).max(20),
+  hsn: z.string(),
+  itemcode: z.string(),
+  quantityavailable: z.string(),
   description: z.string().min(2).max(500).trim(),
   media: z.array(z.string()),
   category: z.string(),
   collections: z.array(z.string()),
   tags: z.array(z.string()),
-  sizes: z.array(z.string()),
-  colors: z.array(z.string()),
+  size: z.string(),
+  color: z.string(),
   price: z.coerce.number().min(0.1),
   expense: z.coerce.number().min(0.1),
 });
@@ -77,13 +80,16 @@ const ProductForm: React.FC<ProductFormProps> = ({ initialData }) => {
         }
       : {
           title: "",
+          hsn:"",
+          itemcode:"",
+          quantityavailable:"",
           description: "",
           media: [],
           category: "",
           collections: [],
           tags: [],
-          sizes: [],
-          colors: [],
+          size: "",
+          color: "",
           price: 0.1,
           expense: 0.1,
         },
@@ -269,7 +275,95 @@ const ProductForm: React.FC<ProductFormProps> = ({ initialData }) => {
                 </FormItem>
               )}
             />
-            {collections.length > 0 && (
+           
+           <FormField
+              control={form.control}
+              name="color"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Color</FormLabel>
+                  <FormControl>
+                    <Input
+                      placeholder="Color"
+                      {...field}
+                      onKeyDown={handleKeyPress}
+                    />
+                  </FormControl>
+                  <FormMessage className="text-red-1" />
+                </FormItem>
+              )}
+            />
+         <FormField
+              control={form.control}
+              name="size"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Size</FormLabel>
+                  <FormControl>
+                    <Input
+                      placeholder="Size"
+                      {...field}
+                      onKeyDown={handleKeyPress}
+                    />
+                  </FormControl>
+                  <FormMessage className="text-red-1" />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="hsn"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>HSN</FormLabel>
+                  <FormControl>
+                    <Input
+                      placeholder="HSN"
+                      {...field}
+                      onKeyDown={handleKeyPress}
+                    />
+                  </FormControl>
+                  <FormMessage className="text-red-1" />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="itemcode"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>ItemCode</FormLabel>
+                  <FormControl>
+                    <Input
+                      placeholder="ItemCode"
+                      {...field}
+                      onKeyDown={handleKeyPress}
+                    />
+                  </FormControl>
+                  <FormMessage className="text-red-1" />
+                </FormItem>
+              )}
+            />
+             <FormField
+              control={form.control}
+              name="quantityavailable"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Quantity</FormLabel>
+                  <FormControl>
+                    <Input
+                      placeholder="Quantity"
+                      {...field}
+                      onKeyDown={handleKeyPress}
+                    />
+                  </FormControl>
+                  <FormMessage className="text-red-1" />
+                </FormItem>
+              )}
+            />
+            <div></div>
+            <div></div>
+             {collections.length > 0 && (
               <FormField
                 control={form.control}
                 name="collections"
@@ -298,60 +392,7 @@ const ProductForm: React.FC<ProductFormProps> = ({ initialData }) => {
                 )}
               />
             )}
-            <FormField
-              control={form.control}
-              name="colors"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Colors</FormLabel>
-                  <FormControl>
-                    <MultiText
-                      placeholder="Colors"
-                      value={field.value}
-                      onChange={(color) =>
-                        field.onChange([...field.value, color])
-                      }
-                      onRemove={(colorToRemove) =>
-                        field.onChange([
-                          ...field.value.filter(
-                            (color) => color !== colorToRemove
-                          ),
-                        ])
-                      }
-                    />
-                  </FormControl>
-                  <FormMessage className="text-red-1" />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="sizes"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Sizes</FormLabel>
-                  <FormControl>
-                    <MultiText
-                      placeholder="Sizes"
-                      value={field.value}
-                      onChange={(size) =>
-                        field.onChange([...field.value, size])
-                      }
-                      onRemove={(sizeToRemove) =>
-                        field.onChange([
-                          ...field.value.filter(
-                            (size) => size !== sizeToRemove
-                          ),
-                        ])
-                      }
-                    />
-                  </FormControl>
-                  <FormMessage className="text-red-1" />
-                </FormItem>
-              )}
-            />
-          </div>
-
+        </div>
           <div className="flex gap-10">
             <Button type="submit" className="bg-blue-1 text-white">
               Submit
