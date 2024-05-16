@@ -7,12 +7,12 @@ import { NextRequest, NextResponse } from "next/server";
 
 export const GET = async (
   req: NextRequest,
-  { params }: { params: { couponCode: string } }
+  { params }: { params: { CouponId: String } }
 ) => {
   try {
     await connectToDB();
 
-    const coupons = await Coupons.findById(params.couponCode).populate({
+    const coupons = await Coupons.findById(params.CouponId).populate({
       path: "products",
       model: Product,
     });
@@ -33,14 +33,14 @@ export const GET = async (
       },
     });
   } catch (err) {
-    console.log("[couponCode_GET]", err);
+    console.log("[_GET]", err);
     return new NextResponse("Internal error", { status: 500 });
   }
 };
 
 export const POST = async (
   req: NextRequest,
-  { params }: { params: { couponCode: string } }
+  { params }: { params: { CouponId: string } }
 ) => {
   try {
     const { userId } = auth();
@@ -51,7 +51,7 @@ export const POST = async (
 
     await connectToDB();
 
-    const coupons = await Coupons.findById(params.couponCode);
+    const coupons = await Coupons.findById(params.CouponId);
 
     if (!coupons) {
       return new NextResponse(
