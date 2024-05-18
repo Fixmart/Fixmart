@@ -63,7 +63,9 @@ export const GET = async (req: NextRequest) => {
   try {
     await connectToDB();
 
-    const coupons = (await Coupons.find().sort({ createdAt: "desc" }).populate({ path: "coupons", model: Coupon }))
+    const coupons = await Coupon.find()
+    .sort({ createdAt: "desc" })
+    .populate({ path: "products", model: Product });
 
     return NextResponse.json(coupons, { status: 200 });
   } catch (err) {

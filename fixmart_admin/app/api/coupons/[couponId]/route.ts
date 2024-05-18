@@ -7,12 +7,12 @@ import { NextRequest, NextResponse } from "next/server";
 
 export const GET = async (
   req: NextRequest,
-  { params }: { params: { CouponId: String } }
+  { params }: { params: { couponId: string } }
 ) => {
   try {
     await connectToDB();
 
-    const coupons = await Coupons.findById(params.CouponId).populate({
+    const coupons = await Coupons.findById(params.couponId).populate({
       path: "products",
       model: Product,
     });
@@ -40,7 +40,7 @@ export const GET = async (
 
 export const POST = async (
   req: NextRequest,
-  { params }: { params: { CouponId: string } }
+  { params }: { params: { couponId: string } }
 ) => {
   try {
     const { userId } = auth();
@@ -51,7 +51,7 @@ export const POST = async (
 
     await connectToDB();
 
-    const coupons = await Coupons.findById(params.CouponId);
+    const coupons = await Coupons.findById(params.couponId);
 
     if (!coupons) {
       return new NextResponse(
