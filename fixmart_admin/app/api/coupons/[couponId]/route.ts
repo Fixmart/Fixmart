@@ -65,6 +65,7 @@ export const POST = async (
       startDate,
       endDate,
       products,
+      description,
     } = await req.json();
 
     if (!couponCode|| !percent || !startDate || !endDate || !products) {
@@ -82,7 +83,7 @@ export const POST = async (
       (productId: string) => !products.includes(productId)
     );
     await Promise.all([
-      // Update added collections with this product
+      
       ...addedProducts.map((productId: string) =>
         Product.findByIdAndUpdate(productId, {
           $push: { coupons: coupons._id },
@@ -103,6 +104,7 @@ export const POST = async (
         startDate,
         endDate,
         products,
+        description,
       },
       { new: true }
     ).populate({ path: "products", model: Product });
@@ -111,14 +113,14 @@ export const POST = async (
 
     return NextResponse.json(updatedCoupon, { status: 200 });
   } catch (err) {
-    console.log("[couponCode_POST]", err);
+    console.log("[couponID_POST]", err);
     return new NextResponse("Internal error", { status: 500 });
   }
 };
 
 export const DELETE = async (
   req: NextRequest,
-  { params }: { params: { couponCode: string } }
+  { params }: { params: { couponId: string } }
 ) => {
   try {
     const { userId } = auth();
@@ -129,7 +131,7 @@ export const DELETE = async (
 
     await connectToDB();
 
-    const coupons = await Coupons.findById(params.couponCode);
+    const coupons = await Coupons.findById(params.couponId);
 
     if (!coupons) {
       return new NextResponse(
@@ -140,7 +142,7 @@ export const DELETE = async (
 
     await Coupons.findByIdAndDelete(coupons._id);
 
-    // Update collections
+
     await Promise.all(
       coupons.products.map((productId: string) =>
         Product.findByIdAndUpdate(productId, {
@@ -153,7 +155,7 @@ export const DELETE = async (
       status: 200,
     });
   } catch (err) {
-    console.log("[couponCode_DELETE]", err);
+    console.log("[couponId_DELETE]", err);
     return new NextResponse("Internal error", { status: 500 });
   }
 };

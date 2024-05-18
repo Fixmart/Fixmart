@@ -45,7 +45,6 @@ const CouponForm: React.FC<CouponsFormProps> = ({ initialData }) => {
 
   const getProducts = async () => {
     try {
-      setLoading(true);
       const res = await fetch("/api/products", {
         method: "GET",
       });
@@ -68,7 +67,7 @@ const CouponForm: React.FC<CouponsFormProps> = ({ initialData }) => {
     ? {
       ...initialData,
       products: initialData.products.map(
-        (products) => products._id
+        (product) => product._id
       ),
     }
       : {
@@ -77,6 +76,7 @@ const CouponForm: React.FC<CouponsFormProps> = ({ initialData }) => {
         startDate: new Date(),
         endDate: new Date(),
         products: [],
+        description: "",
         },
   });
 
@@ -119,7 +119,7 @@ const CouponForm: React.FC<CouponsFormProps> = ({ initialData }) => {
       {initialData ? (
         <div className="flex items-center justify-between">
           <p className="text-heading2-bold">Edit Coupons</p>
-          <Delete id={initialData._id} item={""} />
+          <Delete id={initialData._id} item="coupons" />
         </div>
       ) : (
         <p className="text-heading2-bold">Create Coupon</p>

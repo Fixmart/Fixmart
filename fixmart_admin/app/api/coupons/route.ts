@@ -4,7 +4,6 @@ import { NextRequest, NextResponse } from "next/server";
 import { connectToDB } from "@/lib/mongoDB";
 import Product from "@/lib/models/Product";
 import Coupons from "@/lib/models/Coupons";
-import Coupon from "@/lib/models/Coupons";
 
 
 export const POST = async (req: NextRequest) => {
@@ -63,7 +62,7 @@ export const GET = async (req: NextRequest) => {
   try {
     await connectToDB();
 
-    const coupons = await Coupon.find()
+    const coupons = await Coupons.find()
     .sort({ createdAt: "desc" })
     .populate({ path: "products", model: Product });
 

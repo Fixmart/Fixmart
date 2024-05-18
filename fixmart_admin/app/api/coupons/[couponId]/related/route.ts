@@ -2,10 +2,10 @@ import Coupons from "@/lib/models/Coupons";
 import { connectToDB } from "@/lib/mongoDB";
 import { NextRequest, NextResponse } from "next/server";
 
-export const GET = async (req: NextRequest, { params }: { params: { couponCode: string } }) => {
+export const GET = async (req: NextRequest, { params }: { params: { couponId: string } }) => {
   try {
     await connectToDB();
-    const coupon = await Coupons.findById(params.couponCode)
+    const coupon = await Coupons.findById(params.couponId)
 
 
     if (!coupon) {
