@@ -20,18 +20,17 @@ export async function POST(req: NextRequest) {
     }
 
     const session = await stripe.checkout.sessions.create({
-      payment_method_types: ["card"],
+      payment_method_types: ["card",],
       mode: "payment",
       shipping_address_collection: {
-        allowed_countries: ["US", "CA"],
+        allowed_countries: ["US", "CA","IN"],
       },
       shipping_options: [
-        { shipping_rate: "shr_1MfufhDgraNiyvtnDGef2uwK" },
-        { shipping_rate: "shr_1OpHFHDgraNiyvtnOY4vDjuY" },
+        { shipping_rate: "shr_1PEbvOSDCM68E0bv2tUcjDwR" },
       ],
       line_items: cartItems.map((cartItem: any) => ({
         price_data: {
-          currency: "cad",
+          currency: "inr",
           product_data: {
             name: cartItem.item.title,
             metadata: {
