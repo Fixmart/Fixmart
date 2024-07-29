@@ -15,7 +15,7 @@ const LeftSideBar = () => {
       <Image src="/image.png" alt="logo" width={150} height={70} />
 
       <div className="flex flex-col gap-12">
-        {navLinks.map((link:any) => (
+        {navLinks.map((link) => (
           <Link
             href={link.url}
             key={link.label}

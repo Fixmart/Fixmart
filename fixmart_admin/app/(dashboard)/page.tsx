@@ -10,7 +10,7 @@ import { CircleDollarSign, ShoppingBag, UserRound } from "lucide-react";
 
 export default async function Home() {
   const totalRevenue = await getTotalSales().then((data) => data.totalRevenue);
-  // const totalOrders = await getTotalSales().then((data) => data.totalOrders);
+  const totalOrders = await getTotalSales().then((data) => data.totalOrders);
   const totalCustomers = await getTotalCustomers();
 
   const graphData = await getSalesPerMonth();
@@ -36,9 +36,9 @@ export default async function Home() {
             <CardTitle>Total Orders</CardTitle>
             <ShoppingBag className="max-sm:hidden" />
           </CardHeader>
-          {/* <CardContent>
+          <CardContent>
             <p className="text-body-bold">{totalOrders}</p>
-          </CardContent> */}
+          </CardContent>
         </Card>
 
         <Card>
