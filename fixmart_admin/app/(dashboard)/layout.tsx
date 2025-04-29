@@ -10,8 +10,8 @@ import { ToasterProvider } from "@/lib/ToasterProvider";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Fixmart - Admin Dashboard",
-  description: "Admin dashboard to manage Fixmart",
+  title: "Saasiple - Admin Dashboard",
+  description: "Admin dashboard to manage Saasiple",
 };
 
 export default function RootLayout({
