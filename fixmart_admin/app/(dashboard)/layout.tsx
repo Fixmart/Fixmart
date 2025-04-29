@@ -10,7 +10,7 @@ import { ToasterProvider } from "@/lib/ToasterProvider";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Saasiple - Admin Dashboard",
+  title: "SaasipleEcommerce - Admin Dashboard",
   description: "Admin dashboard to manage Saasiple",
 };
 
